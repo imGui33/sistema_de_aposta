@@ -45,6 +45,8 @@ export const BackGround = styled.img`
 export const WaveComponent = styled.img`
   position: absolute;
   width: 40%;
+  height: 100vh;
+
   @media (max-width: 768px) {
     display: none;
   }
