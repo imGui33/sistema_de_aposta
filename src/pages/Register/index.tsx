@@ -12,9 +12,6 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../../components/Firebase";
 import { database } from "../../components/Firebase";
 
-
-
-
 const Register: React.FC = () => {
   // Hooks
   const {
@@ -28,9 +25,10 @@ const Register: React.FC = () => {
     email,
     setPassword,
     password,
+    setSigned,
+    setUserName
   } = useContext(AuthContext);
   const navigate = useNavigate();
-
 
   const createUser = async (event: any) => {
     event.preventDefault();
@@ -46,23 +44,11 @@ const Register: React.FC = () => {
         setErrorCode("");
       }
 
-      const createUser = await createUserWithEmailAndPassword(
+      const res = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       ).then(async (userCredentials) => {
-        let authCurrentUser = auth.currentUser;
-        await updateProfile(authCurrentUser, {
-          displayName: name,
-        })
-          .then(() => {
-            // Profile updated!
-            // ...
-          })
-          .catch((error) => {
-            // An error occurred
-            // ...
-          });
         const user = userCredentials.user;
         const dbUsers = collection(database, "users");
 
@@ -74,9 +60,14 @@ const Register: React.FC = () => {
           admin: 0,
         });
         console.log(user);
+        await updateProfile(user, {
+          displayName: name,
+          
+        });
+        setUserName(name)
       });
-    
-      navigate("/login");
+
+      navigate("/home");
     } catch (error: any) {
       console.error(error);
       setError(true);
@@ -93,18 +84,6 @@ const Register: React.FC = () => {
       }
     }
   };
-  // console.log(dbUsers);
-  // useEffect(() => {
-  //   const getUsers = async () => {
-  //     const data = await getDocs(dbUsers);
-  //     data.docs.map((doc) => {
-  //       console.log(doc.data());
-  //     });
-  //   };
-  //   getUsers();
-  // });
-
-  // Criando Usuario
 
   return (
     <>

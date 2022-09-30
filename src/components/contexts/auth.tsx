@@ -29,7 +29,7 @@ type UserContextType = {
   CodeError: string;
   setErrorCode: (CodeError: string) => void;
   //   Functions
-  SignOut: () => void;
+
 };
 const initialValue = {
   // Hooks Login
@@ -50,7 +50,7 @@ const initialValue = {
   setErrorCode: () => {},
   
   //   Functions
-  SignOut: () => {},
+
 
 };
 
@@ -70,26 +70,18 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
     onAuthStateChanged(auth, async(user) => {
      
       if (!user || user === null) {
-      
+        // console.log(user)
         setSigned(false);
       } else {
         setSigned(true);
+        // console.log(user)
         setUserName(`${user.displayName}`);
       }
     });
   });
 
   //   Função para LogOut
-  const SignOut = async () => {
-    signOut(auth)
-      .then(() => {
-        // Sign-out successful.
-        setSigned(false);
-      })
-      .catch((error) => {
-        // An error happened.
-      });
-  };
+ 
 
   return (
     <AuthContext.Provider
@@ -108,7 +100,6 @@ export const AuthContextProvider = ({ children }: AuthContextProps) => {
         setErrorCode,
         setUserName,
         userName,
-        SignOut,
       }}
     >
       {children}

@@ -14,7 +14,8 @@ import {
 
 const Login: React.FC = () => {
   // const [email, setEmail] = useState("");
-  const { email, setEmail, password, setPassword, setSigned } = useContext(AuthContext);
+  const { email, setEmail, password, setPassword, setSigned } =
+    useContext(AuthContext);
   const [error, setError] = useState(false);
   const [errorCode, setErrorCode] = useState("");
 
@@ -29,12 +30,20 @@ const Login: React.FC = () => {
       ).then((userCredentials) => {
         const user = userCredentials.user;
       });
-      setSigned(true)
-
+      setSigned(true);
       navigate("/home");
     } catch (error: any) {
       setError(true);
       console.log(error.code);
+
+      if (error.code === "auth/wrong-password") {
+        setErrorCode("Sua senha está incorreta!");
+        console.log('sadadsd')
+      }
+      if (error.code === "auth/too-many-requests") {
+        setErrorCode(`Você tentou entrar muitas vezes, aguarde um pouco. ERROR(${error.code})`);
+        console.log('sadadsd')
+      }
       if (error.code === "auth/invalid-email") {
         setErrorCode("E-mail invalido!");
       }
