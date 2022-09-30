@@ -1,12 +1,19 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { Container, Form, BackGround, WaveComponent, Inputs } from "./style";
 import BG from "../../public/bg.svg";
 import Wave from "../../public/wave.png";
 import { auth } from "../../components/Firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import {
+  Auth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { json, useNavigate } from "react-router-dom";
 import Alert from "@mui/material/Alert";
+import { database } from "../../components/Firebase";
+import { addDoc, collection, getDocs, setDoc } from "firebase/firestore";
+import { AuthContext } from "../../components/contexts/auth";
 
 const Register: React.FC = () => {
   // Hooks
@@ -18,11 +25,25 @@ const Register: React.FC = () => {
   const [error, setError] = useState(false);
   const [errorCode, setErrorCode] = useState("");
 
+  const dbUsers = collection(database, "users");
+  console.log(dbUsers);
+  useEffect(() => {
+    const getUsers = async () => {
+      const data = await getDocs(dbUsers);
+      data.docs.map((doc) => {
+        console.log(doc.data());
+      });
+    };
+    getUsers();
+  });
+
   // Criando Usuario
+
   const createUser = async (event: any) => {
     event.preventDefault();
     try {
       // Verifica se o email ou senha está vazio
+
       if (!email || !password) {
         setError(true);
         setErrorCode("Insira um E-mail e uma senha!");
@@ -36,8 +57,28 @@ const Register: React.FC = () => {
         auth,
         email,
         password
-      ).then((userCredentials) => {
+      ).then(async (userCredentials) => {
+        let authCurrentUser = auth.currentUser;
+        await updateProfile(authCurrentUser, {
+          displayName: name,
+        })
+          .then(() => {
+            // Profile updated!
+            // ...
+          })
+          .catch((error) => {
+            // An error occurred
+            // ...
+          });
         const user = userCredentials.user;
+
+        addDoc(dbUsers, {
+          name,
+          email,
+          password,
+          uid: user.uid,
+          admin: 0,
+        });
         console.log(user);
       });
 
@@ -45,7 +86,9 @@ const Register: React.FC = () => {
     } catch (error: any) {
       console.error(error);
       setError(true);
+
       // Verifica os error
+
       if (error.code === "auth/email-already-in-use") {
         setErrorCode("Esse e-mail já está sendo usado!");
         return;

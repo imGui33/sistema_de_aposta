@@ -25,17 +25,19 @@ const Login: React.FC = () => {
         password
       ).then((userCredentials) => {
         const user = userCredentials.user;
-        console.log(user);
       });
       navigate("/home");
     } catch (error: any) {
       setError(true);
-      
+      console.log(error.code);
       if (error.code === "auth/invalid-email") {
         setErrorCode("E-mail invalido!");
       }
       if (error.code === "auth/user-not-found") {
         setErrorCode("Este usuario não existe!");
+      }
+      if (error.code === "auth/internal-error") {
+        setErrorCode("Sua senha está incorreta ou nossos servidores está com problemas!");
       }
     }
   };
@@ -73,7 +75,7 @@ const Login: React.FC = () => {
             <a href="/register">
               <span>Não tem uma conta? Clique aqui para se registrar</span>
             </a>
-            <input type="submit" value="Registrar-se" />
+            <input type="submit" value="Login" />
           </Inputs>
         </Form>
       </Container>
