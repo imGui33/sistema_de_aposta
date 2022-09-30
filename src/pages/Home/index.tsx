@@ -1,26 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { auth } from "../../components/Firebase";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
+import { AuthContext } from "../../components/contexts/auth";
 
 // import { Container } from './styles';
 
 const Home: React.FC = () => {
-  const user = auth.currentUser;
-  const [userName, setUserName] = useState(``);
-  const navigate = useNavigate();
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-        console.log(user)
-        if(!user){
-            navigate('/login');
-        } else {
-            setUserName(`${user.displayName}`)
-        }
-
-    })
-  });
-  return <h1>{userName}</h1>;
+  
+  const {userName, SignOut} = useContext(AuthContext)
+  
+  return (
+    <div>
+      <h1>{userName === 'null' ? 'Recarregue a pagina' : userName}</h1>
+      <button onClick={SignOut}>Deslogar</button>
+    </div>
+  );
 };
 
 export default Home;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
 import { Container, Form, BackGround, WaveComponent, Inputs } from "./style";
 import BG from "../../public/bg.svg";
@@ -7,11 +7,14 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../components/Firebase";
 import { useNavigate } from "react-router-dom";
 import Alert from "@mui/material/Alert";
+import {
+  AuthContext,
+  AuthContextProvider,
+} from "../../components/contexts/auth";
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
+  // const [email, setEmail] = useState("");
+  const { email, setEmail, password, setPassword, setSigned } = useContext(AuthContext);
   const [error, setError] = useState(false);
   const [errorCode, setErrorCode] = useState("");
 
@@ -26,6 +29,8 @@ const Login: React.FC = () => {
       ).then((userCredentials) => {
         const user = userCredentials.user;
       });
+      setSigned(true)
+
       navigate("/home");
     } catch (error: any) {
       setError(true);
@@ -37,7 +42,9 @@ const Login: React.FC = () => {
         setErrorCode("Este usuario não existe!");
       }
       if (error.code === "auth/internal-error") {
-        setErrorCode("Sua senha está incorreta ou nossos servidores está com problemas!");
+        setErrorCode(
+          "Sua senha está incorreta ou nossos servidores está com problemas!"
+        );
       }
     }
   };

@@ -3,41 +3,34 @@ import React, { useContext, useEffect, useState } from "react";
 import { Container, Form, BackGround, WaveComponent, Inputs } from "./style";
 import BG from "../../public/bg.svg";
 import Wave from "../../public/wave.png";
-import { auth } from "../../components/Firebase";
-import {
-  Auth,
-  createUserWithEmailAndPassword,
-  updateProfile,
-} from "firebase/auth";
-import { json, useNavigate } from "react-router-dom";
+
+import { useNavigate } from "react-router-dom";
 import Alert from "@mui/material/Alert";
-import { database } from "../../components/Firebase";
-import { addDoc, collection, getDocs, setDoc } from "firebase/firestore";
 import { AuthContext } from "../../components/contexts/auth";
+import { addDoc, collection, getDocs, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "../../components/Firebase";
+import { database } from "../../components/Firebase";
+
+
+
 
 const Register: React.FC = () => {
   // Hooks
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    setError,
+    error,
+    setErrorCode,
+    CodeError,
+    setName,
+    name,
+    setEmail,
+    email,
+    setPassword,
+    password,
+  } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const [error, setError] = useState(false);
-  const [errorCode, setErrorCode] = useState("");
-
-  const dbUsers = collection(database, "users");
-  console.log(dbUsers);
-  useEffect(() => {
-    const getUsers = async () => {
-      const data = await getDocs(dbUsers);
-      data.docs.map((doc) => {
-        console.log(doc.data());
-      });
-    };
-    getUsers();
-  });
-
-  // Criando Usuario
 
   const createUser = async (event: any) => {
     event.preventDefault();
@@ -71,6 +64,7 @@ const Register: React.FC = () => {
             // ...
           });
         const user = userCredentials.user;
+        const dbUsers = collection(database, "users");
 
         addDoc(dbUsers, {
           name,
@@ -81,8 +75,8 @@ const Register: React.FC = () => {
         });
         console.log(user);
       });
-
-      navigate("/home");
+    
+      navigate("/login");
     } catch (error: any) {
       console.error(error);
       setError(true);
@@ -99,6 +93,19 @@ const Register: React.FC = () => {
       }
     }
   };
+  // console.log(dbUsers);
+  // useEffect(() => {
+  //   const getUsers = async () => {
+  //     const data = await getDocs(dbUsers);
+  //     data.docs.map((doc) => {
+  //       console.log(doc.data());
+  //     });
+  //   };
+  //   getUsers();
+  // });
+
+  // Criando Usuario
+
   return (
     <>
       <WaveComponent src={Wave} />
@@ -109,7 +116,7 @@ const Register: React.FC = () => {
             className={error ? "show" : "hide"}
             severity={error ? "error" : "success"}
           >
-            {errorCode}
+            {CodeError}
           </Alert>
 
           <h1>Crie sua conta</h1>
